@@ -1,0 +1,30 @@
+# Node modules
+frontend/node_modules/
+backend/node_modules/
+
+# IDE / Editor
+.idea/
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Output / Build files
+dist/
+build/
+output.css
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Others
+*.zip
+*.tar.gz
+*.rar
