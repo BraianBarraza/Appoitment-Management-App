@@ -6,7 +6,7 @@ const servicesStore = useServicesStore();
 </script>
 
 <template>
-  <div>
+  <div class="space-y-5">
     <h2 class="text-4xl font-extrabold text-white mt-10">Services</h2>
     <p class="text-white text-lg mt-5">Please select at least one service</p>
 

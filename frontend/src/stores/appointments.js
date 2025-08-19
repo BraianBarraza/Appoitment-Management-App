@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {ref} from "vue";
+import {ref, computed} from "vue";
 
 
 export const useAppointmentsStore = defineStore('appointments', () => {
@@ -8,14 +8,31 @@ export const useAppointmentsStore = defineStore('appointments', () => {
 
   function onServiceSelected(service){
     if (services.value.some(selectedService => selectedService._id === service._id)) {
-      console.log("Service is already in list, not adding again");
+      services.value = services.value.filter(selectedService => selectedService._id !== service._id);
     }else{
+      if(services.value.length === 3){
+      alert("You can select a maximum of 3 services per day.");
+      return
+      }
       services.value.push(service);
-      console.log("not in list, adding service");
     }
-
   }
+
+  const isServiceSelected = computed(() => {
+    return(id) => services.value.some(service => service._id === id);
+  })
+
+  const noSelectedServices = computed(() => services.value.length === 0 )
+
+  const totalAmount = computed(() => {
+    return services.value.reduce((total, service) => total + service.price, 0)
+  })
+
   return {
+    services,
     onServiceSelected,
+    isServiceSelected,
+    totalAmount,
+    noSelectedServices
   }
 })
