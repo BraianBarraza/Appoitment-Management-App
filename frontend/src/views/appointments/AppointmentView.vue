@@ -3,8 +3,19 @@ import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import SelectedService from "@/components/SelectedService.vue";
 import {useAppointmentsStore} from "@/stores/appointments.js";
 import {formatCurrency} from "@/helpers/index.js";
+import {ref} from "vue";
 
 const appointmentsStore = useAppointmentsStore()
+
+const formatter = ref({
+  date: 'DD/MM/YYYY',
+  month: 'MMM',
+})
+
+const disableDate = (date) =>{
+  const today = new Date()
+  return date < today || date.getMonth() > today.getMonth() + 1 || [0,6].includes(date.getDay())
+}
 </script>
 
 <template>
@@ -36,12 +47,29 @@ const appointmentsStore = useAppointmentsStore()
         <div class="lg:flex gap-5 items-start">
           <div class="w-full lg:w-96 bg-white flex justify-center rounded-lg">
             <VueTailwindDatepicker
+              :disable-date="disableDate"
               i18n="en-US"
               as-single
               no-input
+              :formatter="formatter"
+              v-model=appointmentsStore.date
             />
           </div>
+          <div class="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-5 mt-10 lg:mt-0">
+            <button v-for="hour in appointmentsStore.hours"
+                    class="block text-blue-500 rounded-lg text-xl font-black p-3"
+                    :class="appointmentsStore.time === hour ? 'bg-blue-500 text-white': 'bg-white' "
+                    @click="appointmentsStore.time = hour">
+              {{ hour }}
+            </button>
+          </div>
         </div>
+      </div>
+      <div v-if="appointmentsStore.isValidAppointment" class="flex justify-end">
+        <button class="w-full md:w-auto sm:mt-4 bg-blue-500 p-3 rounded-lg uppercase font-black text-white"
+        @click="appointmentsStore.createAppointment">
+          Confirm Appointment
+        </button>
       </div>
     </div>
   </div>
