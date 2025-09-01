@@ -2,8 +2,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import colors from 'colors';
 import cors from 'cors';
-import servicesRoutes from "./routes/servicesRoutes.js";
 import {db} from './config/db.js'
+import servicesRoutes from "./routes/servicesRoutes.js";
+import authRoutes from "./routes/authRoutes.js"
 
 //env var
 dotenv.config();
@@ -41,6 +42,7 @@ app.use(cors(corsOptions));
 
 //route definition
 app.use('/api/services', servicesRoutes);
+app.use('/api/auth', authRoutes);
 //port definition
 const PORT = process.env.PORT || 8000
 
@@ -49,4 +51,4 @@ app.listen(PORT, () => {
     console.log(colors.blue(`Server started on port:`),colors.bold(`${PORT}`));
 })
 
-console.log(process.env.PORT);
+console.log(PORT);
