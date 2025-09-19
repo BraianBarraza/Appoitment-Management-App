@@ -1,7 +1,7 @@
 import User from '../models/User.js';
 import {sendEmailVerification} from "../emails/authEmailService.js";
 
-const register = async (req, res) => {
+const signUp = async (req, res) => {
     //no empty fields
     if (Object.values(req.body).includes('')) {
         const error = new Error('All fields are mandatory');
@@ -11,7 +11,7 @@ const register = async (req, res) => {
     //no duplicate users
     const userExists = await User.findOne({email})
     if (userExists) {
-        const error = new Error('User already registered');
+        const error = new Error('User already exists');
         return res.status(400).json({msg: error.message})
     }
     //validate password
@@ -28,7 +28,7 @@ const register = async (req, res) => {
         const result = await user.save()
 
         const {name, email, token} = result;
-        sendEmailVerification({
+        await sendEmailVerification({
             name,
             email,
             token
@@ -43,7 +43,7 @@ const register = async (req, res) => {
     }
 }
 
-const verifyAccount = async (req, res) => {
+const confirmAccount = async (req, res) => {
     const {token} = req.params
     const user = await User.findOne({token})
     if (!user) {
@@ -84,7 +84,7 @@ const login = async (req, res) => {
 }
 
 export {
-    register,
-    verifyAccount,
+    signUp,
+    confirmAccount,
     login
 };
