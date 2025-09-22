@@ -6,5 +6,8 @@ export default {
   },
   confirmAccount(token) {
     return api.get(`auth/confirm-account/${token}`)
+  },
+  login(data) {
+    return api.post('auth/login', data)
   }
 }

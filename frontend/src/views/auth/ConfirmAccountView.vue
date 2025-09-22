@@ -1,10 +1,11 @@
 <script setup>
-import {useRoute} from "vue-router";
-import {onMounted} from "vue";
+import {onMounted, inject} from "vue";
+import {useRoute, useRouter} from "vue-router";
 import AuthAPI from "../../api/AuthAPI.js";
 
-const route = useRoute();
-
+const router = useRouter()
+const route = useRoute()
+const toast = inject('toast')
 const {token} = route.params;
 
 onMounted( async ()=>{
@@ -14,8 +15,14 @@ onMounted( async ()=>{
       message: data.msg,
       type: 'success',
     })
+    setTimeout(()=>{
+      router.push({name: 'login'})
+    }, 5000)
   }catch(error){
-    console.log(error)
+    toast.open({
+      message: error.response.data.msg,
+      type: 'error',
+    })
   }
 })
 
@@ -23,6 +30,8 @@ onMounted( async ()=>{
 
 <template>
   <div class="mb-12">
-    <h1 class="text-white font-bold text-center text-2xl m-20">Account confirmation process succeed!</h1>
+    <h1 class="text-6xl font-extrabold text-white text-center mt-10">
+      Account confirmation Succeed!
+    </h1>
   </div>
 </template>

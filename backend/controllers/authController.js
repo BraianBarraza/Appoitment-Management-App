@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import {sendEmailVerification} from "../emails/authEmailService.js";
+import {generateJWT} from "../utils/index.js";
 
 const signUp = async (req, res) => {
     //no empty fields
@@ -76,7 +77,8 @@ const login = async (req, res) => {
     }
     //check user password
     if (await user.checkPassword(password)) {
-        res.json({msg: 'User authenticated'})
+        const token = generateJWT(user._id)
+        res.json(token)
     }else{
         const error = new Error('Incorrect User or Password');
         return res.status(401).json({msg: error.message})
