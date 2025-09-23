@@ -1,4 +1,6 @@
-<script>
+<script setup>
+import {defineUserStore} from "@/stores/user.js";
+const user = defineUserStore();
 
 </script>
 
@@ -8,19 +10,21 @@
     <div class="flex flex-col space-y-5">
 
       <div class="flex gap-2 items-center justify-end">
-        <p class="text-white text-right">Hello: User</p>
+        <p class="text-white text-right">Hello: {{user.getUserName}}</p>
         <button
           type="button"
-          class="bg-red-600 hover:bg-red-700 p-2 text-white uppercase text-xs- font-extrabold rounded-lg">
+          class="bg-red-600 hover:bg-red-700 p-2 text-white uppercase text-xs- font-extrabold rounded-lg"
+          @click="user.logout()">
           Logout
         </button>
       </div>
 
       <nav class="flex gap-2 items-center justify-end">
-        <button
+        <router-link
+          :to="{name:'my-appointments'}"
           class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg">
           My appointments
-        </button>
+        </router-link>
 
         <RouterLink :to="{name:'new-appointment'}"
                     class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg bg-blue-700">

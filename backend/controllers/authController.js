@@ -57,7 +57,7 @@ const confirmAccount = async (req, res) => {
         user.token = '';
         await user.save();
         res.json({msg: 'User verified successfully, you can now log in'})
-    }catch (error){
+    } catch (error) {
         console.log(error)
     }
 }
@@ -79,14 +79,22 @@ const login = async (req, res) => {
     if (await user.checkPassword(password)) {
         const token = generateJWT(user._id)
         res.json(token)
-    }else{
+    } else {
         const error = new Error('Incorrect User or Password');
         return res.status(401).json({msg: error.message})
     }
 }
 
+const user = async (req, res) => {
+    const {user} = req
+    res.json(
+        user
+    )
+}
+
 export {
     signUp,
     confirmAccount,
-    login
+    login,
+    user
 };
