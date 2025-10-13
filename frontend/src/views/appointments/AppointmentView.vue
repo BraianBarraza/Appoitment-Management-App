@@ -12,9 +12,9 @@ const formatter = ref({
   month: 'MMM',
 })
 
-const disableDate = (date) =>{
+const disableDate = (date) => {
   const today = new Date()
-  return date < today || date.getMonth() > today.getMonth() + 1 || [0,6].includes(date.getDay())
+  return date < today || date.getMonth() > today.getMonth() + 1 || [0, 6].includes(date.getDay())
 }
 </script>
 
@@ -55,19 +55,22 @@ const disableDate = (date) =>{
               v-model=appointmentsStore.date
             />
           </div>
-          <div class="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-5 mt-10 lg:mt-0">
+          <div v-if="appointmentsStore.isDateSelected"
+               class="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-5 mt-10 lg:mt-0">
             <button v-for="hour in appointmentsStore.hours"
-                    class="block text-blue-500 rounded-lg text-xl font-black p-3"
+                    class="block text-blue-500 rounded-lg text-xl font-black p-3 disabled:opacity-10"
                     :class="appointmentsStore.time === hour ? 'bg-blue-500 text-white': 'bg-white' "
-                    @click="appointmentsStore.time = hour">
+                    @click="appointmentsStore.time = hour"
+                    :disabled="appointmentsStore.disableTime(hour) ? true : false">
               {{ hour }}
             </button>
           </div>
         </div>
       </div>
       <div v-if="appointmentsStore.isValidAppointment" class="flex justify-end">
-        <button class="w-full md:w-auto sm:mt-4 bg-blue-500 p-3 rounded-lg uppercase font-black text-white"
-        @click="appointmentsStore.createAppointment">
+        <button
+          class="w-full md:w-auto sm:mt-4 bg-blue-500 p-3 rounded-lg uppercase font-black text-white"
+          @click="appointmentsStore.createAppointment">
           Confirm Appointment
         </button>
       </div>

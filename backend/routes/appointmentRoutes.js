@@ -1,10 +1,11 @@
 import express from "express";
-import {createAppointment} from "../controllers/appointmentController.js";
+import {createAppointment, getAppointmentsByDate} from "../controllers/appointmentController.js";
 import authMiddleware from "../middelware/authMiddleware.js";
 
 const router = express.Router();
 
 router.route('/')
-    .post(authMiddleware, createAppointment);
+    .post(authMiddleware, createAppointment)
+    .get(authMiddleware, getAppointmentsByDate);
 
 export default router;

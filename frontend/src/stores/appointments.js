@@ -1,4 +1,4 @@
-import {ref, computed, onMounted, inject} from "vue";
+import {ref, computed, onMounted, inject, watch} from "vue";
 import {defineStore} from "pinia";
 import {useRouter} from "vue-router";
 
@@ -12,9 +12,29 @@ export const useAppointmentsStore = defineStore('appointments', () => {
   const date = ref('')
   const hours = ref([])
   const time = ref('')
+  const appointmentsByDate = ref([])
 
   const toast = inject('toast')
   const router = useRouter()
+
+  onMounted(() => {
+    const startHour = 10
+    const endHour = 19
+    for (let hour = startHour; hour <= endHour; hour++) {
+      hours.value.push(hour + ':00');
+    }
+  })
+
+  watch(date, async () => {
+    time.value = ''
+    //avoid fetch if date is empty
+    if (date.value==='') return
+    //get date appointments
+    const {data} = await AppointmentAPI.getByDate(date.value)
+    appointmentsByDate.value = data
+    console.log(data)
+  })
+
 
   function onServiceSelected(service) {
     if (services.value.some(selectedService => selectedService._id === service._id)) {
@@ -68,18 +88,20 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     time.value = ''
   }
 
-  onMounted(() => {
-    const startHour = 10
-    const endHour = 19
-    for (let hour = startHour; hour <= endHour; hour++) {
-      hours.value.push(hour + ':00');
-    }
-  })
 
   const isValidAppointment = computed(() => {
     return services.value.length && date.value.length && time.value.length
   })
 
+  const isDateSelected = computed(() => {
+    return date.value ? true : false
+  })
+
+  const disableTime = computed(() => {
+    return (hour) => {
+      return appointmentsByDate.value.find(appointment => appointment.time === hour)
+    }
+  })
   return {
     services,
     date,
@@ -90,6 +112,8 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     isServiceSelected,
     totalAmount,
     noSelectedServices,
-    isValidAppointment
+    isValidAppointment,
+    isDateSelected,
+    disableTime
   }
 })
