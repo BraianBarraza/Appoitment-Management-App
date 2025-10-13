@@ -16,7 +16,7 @@ const handleSubmit = async ({password_confirm, ...formData}) => {
     reset('signUpForm')
   } catch (error) {
     toast.open({
-      message: error.response.data.msg,
+      message: error.response?.data?.msg || 'An unexpected error occurred',
       type: 'error',
     })
   }
