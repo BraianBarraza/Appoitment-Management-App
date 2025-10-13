@@ -1,5 +1,7 @@
 import {defineStore} from "pinia";
 import {ref, computed, onMounted} from "vue";
+import AppointmentAPI from "@/api/AppointmentAPI.js";
+import {convertToISO} from "@/helpers/date.js";
 
 
 export const useAppointmentsStore = defineStore('appointments', () => {
@@ -9,43 +11,43 @@ export const useAppointmentsStore = defineStore('appointments', () => {
   const hours = ref([])
   const time = ref('')
 
-  function onServiceSelected(service){
+  function onServiceSelected(service) {
     if (services.value.some(selectedService => selectedService._id === service._id)) {
       services.value = services.value.filter(selectedService => selectedService._id !== service._id);
-    }else{
-      if(services.value.length === 3){
-      alert("You can select a maximum of 3 services per day.");
-      return
+    } else {
+      if (services.value.length === 3) {
+        alert("You can select a maximum of 3 services per day.");
+        return
       }
       services.value.push(service);
     }
   }
 
   const isServiceSelected = computed(() => {
-    return(id) => services.value.some(service => service._id === id);
+    return (id) => services.value.some(service => service._id === id);
   })
 
-  const noSelectedServices = computed(() => services.value.length === 0 )
+  const noSelectedServices = computed(() => services.value.length === 0)
 
   const totalAmount = computed(() => {
     return services.value.reduce((total, service) => total + service.price, 0)
   })
 
-  function createAppointment(){
+  async function createAppointment() {
     const appointment = {
       services: services.value.map(service => service._id),
-      date: date.value,
+      date: convertToISO(date.value),
       time: time.value,
       totalAmount: totalAmount.value
     }
-    console.log(appointment)
-    return appointment
+    const {data} = await AppointmentAPI.create(appointment)
+    console.log(data)
   }
 
-  onMounted(()=>{
+  onMounted(() => {
     const startHour = 10
     const endHour = 19
-    for (let hour = startHour; hour <= endHour; hour++ ) {
+    for (let hour = startHour; hour <= endHour; hour++) {
       hours.value.push(hour + ':00');
     }
   })

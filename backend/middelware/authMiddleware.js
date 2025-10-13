@@ -17,8 +17,6 @@ const authMiddleware = async (req, res, next) => {
         const error = new Error('Invalid or missing token');
         return res.status(403).json({msg: error.message})
     }
-
-    next()
 }
 
 export default authMiddleware
