@@ -32,7 +32,6 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     //get date appointments
     const {data} = await AppointmentAPI.getByDate(date.value)
     appointmentsByDate.value = data
-    console.log(data)
   })
 
 
@@ -94,7 +93,7 @@ export const useAppointmentsStore = defineStore('appointments', () => {
   })
 
   const isDateSelected = computed(() => {
-    return date.value ? true : false
+    return !!date.value
   })
 
   const disableTime = computed(() => {
