@@ -3,7 +3,7 @@ import {defineStore} from "pinia";
 import {useRouter} from "vue-router";
 import AppointmentAPI from "@/api/AppointmentAPI.js";
 import {convertToDDMMYYYY, convertToISO} from "@/helpers/date.js";
-import { defineUserStore } from "./user.js";
+import {defineUserStore} from "./user.js";
 
 
 export const useAppointmentsStore = defineStore('appointments', () => {
@@ -123,6 +123,24 @@ export const useAppointmentsStore = defineStore('appointments', () => {
       time.value = ''
     }
 
+    async function deleteAppointment(id) {
+      if (confirm("Are you sure you want to delete this appointment?")) {
+        try {
+          const {data} = await AppointmentAPI.delete(id)
+          toast.open({
+            message: data.message,
+            type: 'success',
+          })
+          userStore.userAppointments = userStore.userAppointments.filter(appointment => appointment._id !== id)
+        } catch (err) {
+          toast.open({
+            message: 'There was an error deleting the appointment',
+            type: 'error',
+          })
+        }
+      }
+    }
+
 
     const isValidAppointment = computed(() => {
       return services.value.length && date.value.length && time.value.length
@@ -146,6 +164,7 @@ export const useAppointmentsStore = defineStore('appointments', () => {
       setSelectedAppointment,
       saveAppointment,
       clearAppointmentData,
+      deleteAppointment,
       isServiceSelected,
       totalAmount,
       noSelectedServices,

@@ -1,7 +1,7 @@
 <script setup>
 import {displayDate} from "@/helpers/date.js";
 import {formatCurrency} from "@/helpers/index.js";
-import App from "@/App.vue";
+import {useAppointmentsStore} from "@/stores/appointments.js";
 
 defineProps({
   appointment: {
@@ -9,6 +9,8 @@ defineProps({
     required: true
   }
 })
+
+const appointmentsStore = useAppointmentsStore();
 
 </script>
 
@@ -36,7 +38,9 @@ defineProps({
         Edit Appointment
       </RouterLink>
       <button
-        class="bg-red-600 rounded-lg p-3 text-white text-sm uppercase font-black flex-1 md:flex-none">
+        class="bg-red-600 rounded-lg p-3 text-white text-sm uppercase font-black flex-1 md:flex-none"
+        @click="appointmentsStore.deleteAppointment(appointment._id)"
+      >
         Cancel Appointment
       </button>
     </div>

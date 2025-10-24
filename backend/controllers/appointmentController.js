@@ -95,9 +95,37 @@ const updateAppointment = async (req, res) => {
     }
 }
 
+const deleteAppointment = async (req, res) => {
+    const {id} = req.params;
+    //Validate ObjectId
+    if(validateObjectId(id, res)) return;
+
+    //validate if appointment exists
+    const appointment = await Appointment.findById(id).populate('services');
+    if(!appointment){
+        return handleNotFoundError('Appointment not found', res);
+    }
+
+    //user validation
+    if(appointment.user.toString() !== req.user._id.toString()) {
+        const error = new Error('Unauthorized User');
+        return res.status(403).json({
+            error: error.message,
+        })
+    }
+
+    try{
+        await appointment.deleteOne()
+        res.json({message: 'Appointment deleted successfully'})
+    }catch (err){
+        console.error(err);
+    }
+}
+
 export {
     createAppointment,
     getAppointmentsByDate,
     getAppointmentsById,
     updateAppointment,
+    deleteAppointment
 }

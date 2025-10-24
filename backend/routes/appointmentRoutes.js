@@ -1,6 +1,6 @@
 import express from "express";
 import {
-    createAppointment,
+    createAppointment, deleteAppointment,
     getAppointmentsByDate,
     getAppointmentsById,
     updateAppointment
@@ -15,5 +15,6 @@ router.route('/')
 
 router.route('/:id')
     .get(authMiddleware, getAppointmentsById)
-    .put(authMiddleware, updateAppointment);
+    .put(authMiddleware, updateAppointment)
+    .delete(authMiddleware, deleteAppointment);
 export default router;
