@@ -70,7 +70,7 @@ const disableDate = (date) => {
       <div v-if="appointmentsStore.isValidAppointment" class="flex justify-end">
         <button
           class="w-full md:w-auto sm:mt-4 bg-blue-500 p-3 rounded-lg uppercase font-black text-white"
-          @click="appointmentsStore.createAppointment">
+          @click="appointmentsStore.saveAppointment">
           Confirm Appointment
         </button>
       </div>
