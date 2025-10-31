@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
+import {format} from "date-fns";
 
-function validateObjectId(id, res){
+function validateObjectId(id, res) {
     //validate if it is an ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
         const error = new Error('product ID is invalid');
@@ -21,16 +22,20 @@ function handleNotFoundError(message, res) {
 const uniqueId = () => Date.now().toString(32) + Math.random().toString(32).substring(2);
 
 const generateJWT = (id) => {
-    const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({id}, process.env.JWT_SECRET, {
         expiresIn: '7d',
     })
 
     return token;
 }
 
+function formatDate(date) {
+    return format(date, 'PPPP');
+}
 export {
     validateObjectId,
     handleNotFoundError,
     uniqueId,
-    generateJWT
+    generateJWT,
+    formatDate,
 }

@@ -1,17 +1,29 @@
 import {parse, formatISO, startOfDay, endOfDay, isValid} from "date-fns"
 import {handleNotFoundError, validateObjectId} from "../utils/index.js"
 import Appointment from '../models/Appointment.js';
+import {
+    sendEmailDeletedAppointment,
+    sendEmailNewAppointment,
+    sendEmailUpdateAppointment
+} from "../emails/appointmentEmailService.js";
+import {formatDate} from "../utils/index.js";
 
 const createAppointment = async (req, res) => {
     const appointment = req.body;
     appointment.user = req.user._id.toString();
     try {
         const newAppointment = new Appointment(appointment);
-        await newAppointment.save();
+        const result = await newAppointment.save();
 
         res.json({
             message: 'Appointment created successfully',
         })
+
+        await sendEmailNewAppointment({
+            date: formatDate(result.date),
+            time: result.time,
+        })
+
     } catch (err) {
         console.error(err);
     }
@@ -41,16 +53,16 @@ const getAppointmentsByDate = async (req, res) => {
 const getAppointmentsById = async (req, res) => {
     const {id} = req.params;
     //Validate ObjectId
-    if(validateObjectId(id, res)) return;
+    if (validateObjectId(id, res)) return;
 
     //validate if appointment exists
     const appointment = await Appointment.findById(id).populate('services');
-    if(!appointment){
+    if (!appointment) {
         return handleNotFoundError('Appointment not found', res);
     }
 
     //user validation
-    if(appointment.user.toString() !== req.user._id.toString()) {
+    if (appointment.user.toString() !== req.user._id.toString()) {
         const error = new Error('Unauthorized User');
         return res.status(403).json({
             error: error.message,
@@ -63,16 +75,16 @@ const getAppointmentsById = async (req, res) => {
 const updateAppointment = async (req, res) => {
     const {id} = req.params;
     //Validate ObjectId
-    if(validateObjectId(id, res)) return;
+    if (validateObjectId(id, res)) return;
 
     //validate if appointment exists
     const appointment = await Appointment.findById(id).populate('services');
-    if(!appointment){
+    if (!appointment) {
         return handleNotFoundError('Appointment not found', res);
     }
 
     //user validation
-    if(appointment.user.toString() !== req.user._id.toString()) {
+    if (appointment.user.toString() !== req.user._id.toString()) {
         const error = new Error('Unauthorized User');
         return res.status(403).json({
             error: error.message,
@@ -85,12 +97,18 @@ const updateAppointment = async (req, res) => {
     appointment.totalAmount = totalAmount
     appointment.services = services
 
-    try{
+
+    try {
         const result = await appointment.save();
         res.json({
             message: 'Appointment updated successfully',
         })
-    }catch(err){
+        await sendEmailUpdateAppointment({
+            date: formatDate(result.date),
+            time: result.time,
+            services: result.services,
+        })
+    } catch (err) {
         console.error(err);
     }
 }
@@ -98,26 +116,34 @@ const updateAppointment = async (req, res) => {
 const deleteAppointment = async (req, res) => {
     const {id} = req.params;
     //Validate ObjectId
-    if(validateObjectId(id, res)) return;
+    if (validateObjectId(id, res)) return;
 
     //validate if appointment exists
     const appointment = await Appointment.findById(id).populate('services');
-    if(!appointment){
+    if (!appointment) {
         return handleNotFoundError('Appointment not found', res);
     }
 
     //user validation
-    if(appointment.user.toString() !== req.user._id.toString()) {
+    if (appointment.user.toString() !== req.user._id.toString()) {
         const error = new Error('Unauthorized User');
         return res.status(403).json({
             error: error.message,
         })
     }
+    //save data for email
+    const mailPayload = {
+        date: formatDate(appointment.date),
+        time: appointment.time,
+    };
+    try {
+        const result = await appointment.deleteOne()
 
-    try{
-        await appointment.deleteOne()
         res.json({message: 'Appointment deleted successfully'})
-    }catch (err){
+
+        Promise.resolve(sendEmailDeletedAppointment(mailPayload))
+            .catch(err => console.error('[mail][delete] error:', err));
+    } catch (err) {
         console.error(err);
     }
 }
