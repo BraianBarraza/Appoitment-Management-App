@@ -1,6 +1,7 @@
 import User from '../models/User.js';
-import {sendEmailVerification} from "../emails/authEmailService.js";
+import {sendEmailPasswordReset, sendEmailVerification} from "../emails/authEmailService.js";
 import {generateJWT} from "../utils/index.js";
+import {uniqueId} from "../utils/index.js";
 
 const signUp = async (req, res) => {
     //no empty fields
@@ -85,6 +86,29 @@ const login = async (req, res) => {
     }
 }
 
+const forgotPassword = async (req, res) => {
+    const {email} = req.body;
+    //check if user exists
+    const user = await User.findOne({email})
+    if (!user) {
+        const error = new Error('User does not exist');
+        return res.status(404).json({msg: error.message})
+    }
+    try {
+        user.token = uniqueId()
+        const result = await user.save();
+        res.json({msg: 'We have sent you an email with instructions to reset your password'})
+        await sendEmailPasswordReset({
+            name: result.name,
+            email: result.email,
+            token: result.token
+        })
+    } catch (err) {
+        console.error(err);
+    }
+
+}
+
 const user = async (req, res) => {
     const {user} = req
     res.json(
@@ -96,5 +120,6 @@ export {
     signUp,
     confirmAccount,
     login,
+    forgotPassword,
     user
 };
