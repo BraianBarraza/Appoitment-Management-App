@@ -12,7 +12,7 @@ const handleSubmit = async ({email}) => {
       message: data.msg,
       type: 'success',
     })
-    reset('passwordReset');
+    reset('forgotPassword');
   } catch (error) {
     toast.open({
       message: error.response.data.msg,

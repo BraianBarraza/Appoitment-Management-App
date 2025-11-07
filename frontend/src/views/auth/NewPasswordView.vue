@@ -3,7 +3,6 @@
 </script>
 
 <template>
-  <template>
     <h1 class="text-6xl font-extrabold text-white text-center mt-10">
       New Password
     </h1>
@@ -38,6 +37,3 @@
 
     </FormKit>
   </template>
-
-</template>
-

@@ -37,7 +37,7 @@ export async function sendEmailPasswordReset({name, email, token}) {
         text: 'Reset your password',
         html: `<p>Hi ${name}, do you want to reset your password from 'Appointment Management App'?</p>
                 <p>If you have forgotten your password, you just need to click in the next link:</p>
-                <a href="${process.env.FRONTEND_URL}/auth/forgot-password/${token}">Reset Password</a>
+                <a href="${process.env.FRONTEND_URL}/auth/new-password/${token}">Reset Password</a>
                 <p>if you didn´t request a password reset, please ignore this message</p>`
     })
 }
