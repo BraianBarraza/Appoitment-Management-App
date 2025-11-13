@@ -14,9 +14,9 @@ router.route('/')
     .get(getServices)
 
 router.route('/:id')
-.get(getServiceById)
-.put(updateService)
-.delete(deleteService);
+    .get(getServiceById)
+    .put(updateService)
+    .delete(deleteService);
 
 export default router;
 

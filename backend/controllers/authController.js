@@ -109,19 +109,37 @@ const forgotPassword = async (req, res) => {
 
 }
 
-const verifyPasswordResetToken = async (req,res)=>{
-    console.log('verifyPassword')
+const verifyPasswordResetToken = async (req, res) => {
     const {token} = req.params
     const isValidToken = await User.findOne({token})
     if (!isValidToken) {
         const error = new Error('Invalid token');
-        res.status(401).json({msg: error.message})
+        return res.status(401).json({msg: error.message})
     }
     res.json('Valid Token')
 }
 
-const updatePassword = (req, res) => {
-    console.log('updatePassword')
+const updatePassword = async (req, res) => {
+    const {token} = req.params
+    const user = await User.findOne({token})
+
+    if (!user) {
+        const error = new Error('Invalid token');
+        return res.status(401).json({msg: error.message})
+    }
+
+    const {password} = req.body;
+
+    try {
+        user.token = ""
+        user.password = password
+        await user.save()
+        res.json({msg: 'Password reset successfully'})
+    }catch(err) {
+        console.error(err);
+    }
+
+
 }
 
 const user = async (req, res) => {
