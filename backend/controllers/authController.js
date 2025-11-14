@@ -148,6 +148,18 @@ const user = async (req, res) => {
         user
     )
 }
+const admin = async (req, res) => {
+    const {user} = req
+
+    if (!user.admin){
+        const error = new Error('Action denied');
+        return res.status(403).json({msg: error.message})
+    }
+
+    res.json(
+        user
+    )
+}
 
 export {
     signUp,
@@ -156,5 +168,6 @@ export {
     forgotPassword,
     verifyPasswordResetToken,
     updatePassword,
-    user
+    user,
+    admin
 };

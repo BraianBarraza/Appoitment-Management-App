@@ -34,7 +34,7 @@ const user = defineUserStore();
       </nav>
     </div>
   </div>
-  <main>
+  <main >
     <RouterView/>
   </main>
 </template>

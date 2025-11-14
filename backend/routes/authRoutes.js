@@ -6,7 +6,8 @@ import {
     user,
     forgotPassword,
     verifyPasswordResetToken,
-    updatePassword
+    updatePassword,
+    admin
 } from "../controllers/authController.js"
 import authMiddleware from "../middelware/authMiddleware.js"
 
@@ -23,5 +24,6 @@ router.route('/new-password/:token')
 
 //JWT Required for the routes below
 router.get('/user', authMiddleware, user);
+router.get('/admin', authMiddleware, admin);
 
 export default router;
