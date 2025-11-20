@@ -1,5 +1,4 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import AppointmentsLayout from '../views/appointments/AppointmentsLayout.vue'
 import AuthAPI from "@/api/AuthAPI.js";
 
@@ -8,20 +7,27 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'root',
+      beforeEnter: async (to, from, next) => {
+        try {
+          const {data} = await AuthAPI.auth();
+
+          if (data.admin) {
+            next({name: 'admin-appointments'});
+          } else {
+            next({name: 'new-appointment'});
+          }
+        } catch (error) {
+          next({name: 'login'});
+        }
+      },
     },
     {
       path: '/admin',
       name: 'admin',
       component: () => import('../views/admin/AdminLayout.vue'),
-      meta:{requiresAdmin: true},
-      children:[
+      meta: {requiresAdmin: true},
+      children: [
         {
           path: '',
           name: 'admin-appointments',
@@ -116,7 +122,7 @@ router.beforeEach(async (to, from, next) => {
     try {
       const {data} = await AuthAPI.auth();
       if (data.admin) {
-        next({name : 'admin'});
+        next({name: 'admin'});
       } else {
         next()
       }
@@ -133,7 +139,7 @@ router.beforeEach(async (to, from, next) => {
     try {
       await AuthAPI.admin();
       next()
-    }catch (error) {
+    } catch (error) {
       next({name: 'login'})
     }
   } else {
