@@ -1,35 +1,15 @@
-# frontend
+# Frontend - Appointment Management App
 
-This template should help get you started developing with Vue 3 in Vite.
+SPA client built with **Vue 3 + Vite**. For full project documentation (setup, scripts, and API overview), see the main README in the repository root.
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
+## Scripts
 ```sh
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+Other available commands:
+- `npm run build`
+- `npm run preview`
+- `npm run lint`
+- `npm run format`
