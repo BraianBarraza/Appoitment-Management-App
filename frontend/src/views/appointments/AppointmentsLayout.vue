@@ -1,17 +1,21 @@
 <script setup>
-import {onMounted, inject} from "vue";
+import {onMounted, inject, computed} from "vue";
+import {useRoute} from "vue-router";
 import {useUserStore} from "@/stores/user.js";
 import {useAppointmentsStore} from "@/stores/appointments.js";
 
 const user = useUserStore();
 const appointmentsStore = useAppointmentsStore();
 const toast = inject('toast');
+const route = useRoute();
 
 appointmentsStore.setToast(toast);
 
 onMounted(() => {
   user.fetchUser();
 })
+
+const isMyAppointments = computed(() => route.name === 'my-appointments')
 </script>
 
 <template>
@@ -29,22 +33,68 @@ onMounted(() => {
         </button>
       </div>
 
-      <nav class="flex gap-2 items-center justify-end">
+      <nav class="nav-toggle flex items-center relative">
+        <div
+          class="nav-slider"
+          :class="isMyAppointments ? 'slider-left' : 'slider-right'"
+        />
         <router-link
           :to="{name:'my-appointments'}"
-          class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg">
+          class="nav-link"
+          :class="isMyAppointments ? 'text-white' : 'text-gray-300'"
+        >
           My appointments
         </router-link>
 
-        <RouterLink :to="{name:'new-appointment'}"
-                    class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg bg-blue-700">
+        <RouterLink
+          :to="{name:'new-appointment'}"
+          class="nav-link"
+          :class="!isMyAppointments ? 'text-white' : 'text-gray-300'"
+        >
           New appointment
         </RouterLink>
-
       </nav>
     </div>
   </div>
-  <main >
+  <main>
     <RouterView/>
   </main>
 </template>
+
+<style scoped>
+.nav-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.2rem;
+}
+
+.nav-link {
+  position: relative;
+  z-index: 1;
+  padding: 0.6rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-slider {
+  position: absolute;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  width: calc(50% - 0.2rem);
+  background: rgb(29 78 216);
+  border-radius: 0.4rem;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.slider-left {
+  transform: translateX(0.2rem);
+}
+
+.slider-right {
+  transform: translateX(calc(100% + 0.2rem));
+}
+</style>
