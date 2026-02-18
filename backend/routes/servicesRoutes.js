@@ -6,17 +6,17 @@ import {
     getServices,
     updateService
 } from "../controllers/servicesController.js";
+import authMiddleware from "../middelware/authMiddleware.js";
 
 const router = express.Router();
 
 router.route('/')
-    .post(createService)
     .get(getServices)
+    .post(authMiddleware, createService)
 
 router.route('/:id')
     .get(getServiceById)
-    .put(updateService)
-    .delete(deleteService);
+    .put(authMiddleware, updateService)
+    .delete(authMiddleware, deleteService);
 
 export default router;
-

@@ -21,20 +21,17 @@ app.use(express.json());
 db()
 
 //cors configuration
-const whitelist = [process.env.FRONTEND_URL] ;
+const whitelist = [process.env.FRONTEND_URL];
 
 if (process.argv[2] === '--postman'){
     whitelist.push(undefined);
 }
 
 const corsOptions = {
-    origin:function (origin, callback){
-        if (whitelist.includes(origin)){
-            //allow request from whitelisted origin
-            console.log('operation allowed from origin:', colors.green(origin));
+    origin: function (origin, callback) {
+        if (whitelist.includes(origin)) {
             callback(null, true);
-        }else{
-            //block request
+        } else {
             callback(new Error(`Origin: ${origin} is not allowed by CORS`));
         }
     }
@@ -47,6 +44,13 @@ app.use('/api/services', servicesRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/users', userRoutes);
+
+//global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({msg: 'Internal server error'});
+});
+
 //port definition
 const PORT = process.env.PORT || 8000
 

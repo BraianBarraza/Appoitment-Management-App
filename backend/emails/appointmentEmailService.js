@@ -1,5 +1,7 @@
 import {createTransport} from "../config/nodemailer.js";
 
+const getAdminEmail = () => process.env.ADMIN_EMAIL || 'admin@appointmentApp.com';
+
 export async function sendEmailNewAppointment({date, time}) {
     const transporter = createTransport(
         process.env.EMAIL_HOST,
@@ -10,7 +12,7 @@ export async function sendEmailNewAppointment({date, time}) {
 
     const info = await transporter.sendMail({
         from: 'AppointmentApp <appointments@appointmentApp.com>',
-        to: 'admin@appointmentApp.com',
+        to: getAdminEmail(),
         subject: 'Appointment App - New Appointment Scheduled',
         text: 'New Appointment Scheduled',
         html: `<p>A new appointment has been scheduled.</p>
@@ -30,14 +32,13 @@ export async function sendEmailUpdateAppointment({date, time, services}) {
 
     const info = await transporter.sendMail({
         from: 'AppointmentApp <appointments@appointmentApp.com>',
-        to: 'admin@appointmentApp.com',
+        to: getAdminEmail(),
         subject: 'Appointment App - Edited Appointment',
         text: 'Appointment service edited or rescheduled',
-        html: `<p> A user had made changes in his Appointment services or schdule.</p>
+        html: `<p>A user has made changes in their Appointment services or schedule.</p>
                <p><strong>Date:</strong> ${date}</p>
                <p><strong>Time:</strong> ${time}</p>
-                <!--TODO: Confirm Services by Name-->
-               <p><strong>Services-Code:</strong> ${services}</p>`
+               <p><strong>Services:</strong> ${services}</p>`
     });
 
     console.log('Message sent: %s', info.messageId);
@@ -53,10 +54,10 @@ export async function sendEmailDeletedAppointment({date, time}) {
 
     const info = await transporter.sendMail({
         from: 'AppointmentApp <appointments@appointmentApp.com>',
-        to: 'admin@appointmentApp.com',
+        to: getAdminEmail(),
         subject: 'Appointment App - Canceled Appointment',
         text: 'Appointment service Canceled',
-        html: `<p> A user had canceled an Appointment.</p>
+        html: `<p>A user has canceled an Appointment.</p>
                <p><strong>Date:</strong> ${date}</p>
                <p><strong>Time:</strong> ${time}</p>`
     });

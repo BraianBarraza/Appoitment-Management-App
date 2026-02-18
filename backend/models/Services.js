@@ -9,7 +9,6 @@ const servicesSchema = mongoose.Schema({
     price: {
         type: Number,
         required: true,
-        trim: true,
     }
 })
 

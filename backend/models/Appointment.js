@@ -3,22 +3,26 @@ import mongoose from 'mongoose';
 const appointmentSchema = mongoose.Schema({
     services:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Services'
+        ref: 'Services',
+        required: true
     }],
     date:{
-        type: Date
+        type: Date,
+        required: true
     },
     time:{
-        type: String
+        type: String,
+        required: true
     },
     totalAmount: {
         type: Number,
+        required: true
     },
     user:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     }
-
 })
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);

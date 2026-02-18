@@ -8,16 +8,19 @@ const getUserAppointments = async (req, res) => {
     }
 
     try {
-        const query = req.user.admin ? {date: {$gte: new Date()}} : {user, date: {$gte: new Date()}}
+        const query = req.user.admin
+            ? {date: {$gte: new Date()}}
+            : {user, date: {$gte: new Date()}}
         const appointments = await Appointment
             .find(query)
             .populate('services')
             .populate({path:'user', select:'name email'})
-            .sort({date: 'asc'}) //populate service details
+            .sort({date: 'asc'})
 
         res.json(appointments);
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        res.status(500).json({msg: 'An error occurred while fetching appointments'})
     }
 }
 
