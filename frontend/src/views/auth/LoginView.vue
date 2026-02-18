@@ -9,11 +9,11 @@ const toast = inject('toast');
 const handleSubmit = async (formData) => {
   try {
     const {data} = await authAPI.login(formData);
-    localStorage.setItem("AUTH_TOKEN", data);
-    router.push({name: 'my-appointments'});
+    localStorage.setItem("AUTH_TOKEN", data.token);
+    router.push({name: 'root'});
   }catch(error) {
     toast.open({
-      message: error.response.data.msg,
+      message: error.response?.data?.msg || 'An unexpected error occurred',
       type: 'error',
     })
   }
@@ -44,7 +44,8 @@ const handleSubmit = async (formData) => {
       label="Password"
       name="password"
       placeholder="User password"
-      validation="required"
+      validation="required|length:8"
+      :validation-messages="{ length: 'Password must be at least 8 characters' }"
     />
 
     <FormKit type="submit">Login</FormKit>

@@ -24,7 +24,7 @@ defineProps({
     </p>
 
     <p class="text-lg font-black">Required services for this appointment</p>
-    <div v-for="service in appointment.services">
+    <div v-for="service in appointment.services" :key="service._id">
       <p>Service: {{ service.name }}</p>
       <p class="text-2xl font-black text-blue-500">Total to pay: {{ formatCurrency( service.price ) }}</p>
     </div>

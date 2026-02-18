@@ -1,8 +1,8 @@
 <script setup>
-import {defineUserStore} from "@/stores/user.js";
+import {useUserStore} from "@/stores/user.js";
 import Appointment from "@/components/Appointment.vue";
 
-const user = defineUserStore();
+const user = useUserStore();
 </script>
 
 <template>
@@ -24,4 +24,3 @@ const user = defineUserStore();
   </div>
 
 </template>
-

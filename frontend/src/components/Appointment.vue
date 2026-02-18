@@ -22,7 +22,7 @@ const appointmentsStore = useAppointmentsStore();
     </p>
 
     <p class="text-lg font-black">Requested Services:</p>
-    <div v-for="service in appointment.services">
+    <div v-for="service in appointment.services" :key="service._id">
       <p>{{ service.name }}</p>
       <p class="text-2xl font-black text-blue-500">{{ formatCurrency(service.price) }}</p>
     </div>

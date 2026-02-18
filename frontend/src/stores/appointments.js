@@ -1,44 +1,48 @@
-import {computed, inject, onMounted, ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {defineStore} from "pinia";
-import {useRouter} from "vue-router";
 import AppointmentAPI from "@/api/AppointmentAPI.js";
 import {convertToDDMMYYYY, convertToISO} from "@/helpers/date.js";
-import {defineUserStore} from "./user.js";
-
+import {useUserStore} from "./user.js";
+import router from "@/router/index.js";
 
 export const useAppointmentsStore = defineStore('appointments', () => {
 
     const appointmentId = ref('')
     const services = ref([])
     const date = ref('')
-    const hours = ref([])
     const time = ref('')
     const appointmentsByDate = ref([])
 
-    const toast = inject('toast')
-    const router = useRouter()
-    const userStore = defineUserStore()
+    const startHour = 10
+    const endHour = 19
+    const hours = ref(
+      Array.from({length: endHour - startHour + 1}, (_, i) => `${startHour + i}:00`)
+    )
 
-    onMounted(() => {
-      const startHour = 10
-      const endHour = 19
-      for (let hour = startHour; hour <= endHour; hour++) {
-        hours.value.push(hour + ':00');
-      }
-    })
+    let toast = null
+
+    function setToast(toastInstance) {
+      toast = toastInstance
+    }
 
     watch(date, async () => {
       time.value = ''
-      //avoid fetch if date is empty
       if (date.value === '') return
-      //get date appointments
-      const {data} = await AppointmentAPI.getByDate(date.value)
 
-      if (appointmentId.value) {
-        appointmentsByDate.value = data.filter(appointment => appointment._id !== appointmentId.value)
-        time.value = data.filter(appointment => appointment._id === appointmentId.value)[0].time
-      } else {
-        appointmentsByDate.value = data
+      try {
+        const {data} = await AppointmentAPI.getByDate(date.value)
+
+        if (appointmentId.value) {
+          appointmentsByDate.value = data.filter(appointment => appointment._id !== appointmentId.value)
+          const currentAppointment = data.find(appointment => appointment._id === appointmentId.value)
+          if (currentAppointment) {
+            time.value = currentAppointment.time
+          }
+        } else {
+          appointmentsByDate.value = data
+        }
+      } catch (err) {
+        console.error('Error fetching appointments by date:', err)
       }
     })
 
@@ -48,8 +52,6 @@ export const useAppointmentsStore = defineStore('appointments', () => {
       date.value = convertToDDMMYYYY(appointment.date)
       time.value = appointment.time
       appointmentId.value = appointment._id
-
-
     }
 
     function onServiceSelected(service) {
@@ -75,6 +77,8 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     })
 
     async function saveAppointment() {
+      const userStore = useUserStore()
+
       const appointment = {
         services: services.value.map(service => service._id),
         date: convertToISO(date.value),
@@ -82,38 +86,31 @@ export const useAppointmentsStore = defineStore('appointments', () => {
         totalAmount: totalAmount.value
       }
 
-      if (appointmentId.value) {
-        try {
+      try {
+        if (appointmentId.value) {
           const {data} = await AppointmentAPI.update(appointmentId.value, appointment)
-          toast.open({
-            message: data.message,
+          toast?.open({
+            message: data.msg,
             type: 'success',
           })
-        } catch (err) {
-          console.error(err);
-          toast.open({
-            message: 'There was an error updating the appointment',
-            type: 'error',
-          })
-        }
-      } else {
-        try {
+        } else {
           const {data} = await AppointmentAPI.create(appointment)
-          toast.open({
-            message: data.message,
+          toast?.open({
+            message: data.msg,
             type: 'success',
           })
-        } catch (err) {
-          console.error(err);
-          toast.open({
-            message: 'There was an error creating the appointment',
-            type: 'error',
-          })
         }
+
+        clearAppointmentData()
+        await userStore.getUserAppointments()
+        router.push({name: 'my-appointments'})
+      } catch (err) {
+        console.error(err);
+        toast?.open({
+          message: 'There was an error saving the appointment',
+          type: 'error',
+        })
       }
-      clearAppointmentData()
-      userStore.getUserAppointments()
-      router.push({name: 'my-appointments'})
     }
 
     function clearAppointmentData() {
@@ -124,16 +121,18 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     }
 
     async function deleteAppointment(id) {
+      const userStore = useUserStore()
+
       if (confirm("Are you sure you want to delete this appointment?")) {
         try {
           const {data} = await AppointmentAPI.delete(id)
-          toast.open({
-            message: data.message,
+          toast?.open({
+            message: data.msg,
             type: 'success',
           })
           userStore.userAppointments = userStore.userAppointments.filter(appointment => appointment._id !== id)
         } catch (err) {
-          toast.open({
+          toast?.open({
             message: 'There was an error deleting the appointment',
             type: 'error',
           })
@@ -160,6 +159,7 @@ export const useAppointmentsStore = defineStore('appointments', () => {
       date,
       hours,
       time,
+      setToast,
       onServiceSelected,
       setSelectedAppointment,
       saveAppointment,

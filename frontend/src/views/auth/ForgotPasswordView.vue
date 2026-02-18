@@ -15,7 +15,7 @@ const handleSubmit = async ({email}) => {
     reset('forgotPassword');
   } catch (error) {
     toast.open({
-      message: error.response.data.msg,
+      message: error.response?.data?.msg || 'An unexpected error occurred',
       type: 'error',
     })
   }
@@ -46,4 +46,3 @@ const handleSubmit = async ({email}) => {
 
   </FormKit>
 </template>
-

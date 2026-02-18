@@ -25,7 +25,7 @@ const handleSubmit = async ({password_confirm, ...formData}) => {
 
 <template>
   <h1 class="text-6xl font-extrabold text-white text-center mt-10">
-    Sing Up
+    Sign Up
   </h1>
   <p class="text-2xl text-white text-center my-5">Create a new account</p>
 
@@ -69,7 +69,7 @@ const handleSubmit = async ({password_confirm, ...formData}) => {
     }"
     />
 
-    <FormKit type="submit">Sing Up</FormKit>
+    <FormKit type="submit">Sign Up</FormKit>
 
   </FormKit>
 </template>

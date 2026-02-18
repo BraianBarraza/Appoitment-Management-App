@@ -11,11 +11,11 @@ const {token} = route.params;
 const validToken = ref(false);
 onMounted(async () => {
   try {
-    const {data} = await authAPI.verifyPasswordResetToken(token);
+    await authAPI.verifyPasswordResetToken(token);
     validToken.value = true;
   } catch (error) {
     toast.open({
-      message: error.response.data.msg,
+      message: error.response?.data?.msg || 'An unexpected error occurred',
       type: 'error',
     });
   }
@@ -33,7 +33,7 @@ const handleSubmit = async ({password}) => {
     }, 3000)
   } catch (error) {
     toast.open({
-      message: error.response.data.msg,
+      message: error.response?.data?.msg || 'An unexpected error occurred',
       type: 'error',
     });
   }
@@ -79,5 +79,5 @@ const handleSubmit = async ({password}) => {
     </FormKit>
   </div>
 
-  <p v-else class="text-center text text-2xl font-black text-white">Sorry, this token is no valid</p>
+  <p v-else class="text-center text-2xl font-black text-white">Sorry, this token is not valid</p>
 </template>

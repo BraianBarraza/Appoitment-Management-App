@@ -1,5 +1,5 @@
 <script setup>
-import {useRoute, useRouter} from "vue-router";
+import {useRoute} from "vue-router";
 import {onMounted} from "vue";
 import AppointmentAPI from "@/api/AppointmentAPI.js";
 import router from "@/router/index.js";

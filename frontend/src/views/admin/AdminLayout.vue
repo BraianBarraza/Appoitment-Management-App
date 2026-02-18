@@ -1,8 +1,17 @@
 <script setup>
-import {defineUserStore} from "@/stores/user.js";
+import {onMounted, inject} from "vue";
+import {useUserStore} from "@/stores/user.js";
+import {useAppointmentsStore} from "@/stores/appointments.js";
 
-const user = defineUserStore();
+const user = useUserStore();
+const appointmentsStore = useAppointmentsStore();
+const toast = inject('toast');
 
+appointmentsStore.setToast(toast);
+
+onMounted(() => {
+  user.fetchUser();
+})
 </script>
 
 <template>
@@ -17,7 +26,7 @@ const user = defineUserStore();
         <p class="text-white text-right">Hello: Admin {{ user.getUserName }}</p>
         <button
           type="button"
-          class="bg-red-600 hover:bg-red-700 p-2 text-white uppercase text-xs- font-extrabold rounded-lg"
+          class="bg-red-600 hover:bg-red-700 p-2 text-white uppercase text-xs font-extrabold rounded-lg"
           @click="user.logout"
         >
           Logout

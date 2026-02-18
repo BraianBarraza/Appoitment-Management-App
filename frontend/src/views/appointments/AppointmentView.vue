@@ -14,7 +14,13 @@ const formatter = ref({
 
 const disableDate = (date) => {
   const today = new Date()
-  return date < today || date.getMonth() > today.getMonth() + 1 || [0, 6].includes(date.getDay())
+  today.setHours(0, 0, 0, 0)
+
+  // Allow booking up to 2 months ahead (handles year boundaries)
+  const maxDate = new Date(today)
+  maxDate.setMonth(maxDate.getMonth() + 2)
+
+  return date < today || date > maxDate || [0, 6].includes(date.getDay())
 }
 </script>
 
@@ -57,7 +63,7 @@ const disableDate = (date) => {
           </div>
           <div v-if="appointmentsStore.isDateSelected"
                class="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-5 mt-10 lg:mt-0">
-            <button v-for="hour in appointmentsStore.hours"
+            <button v-for="hour in appointmentsStore.hours" :key="hour"
                     class="block text-blue-500 rounded-lg text-xl font-black p-3 disabled:opacity-10"
                     :class="appointmentsStore.time === hour ? 'bg-blue-500 text-white': 'bg-white' "
                     @click="appointmentsStore.time = hour"

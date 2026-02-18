@@ -118,6 +118,8 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some(url => url.meta.requiresAuth);
+  const requiresAdmin = to.matched.some(url => url.meta.requiresAdmin);
+
   if (requiresAuth) {
     try {
       const {data} = await AuthAPI.auth();
@@ -129,13 +131,7 @@ router.beforeEach(async (to, from, next) => {
     } catch (error) {
       next({name: 'login'})
     }
-  } else {
-    next();
-  }
-})
-router.beforeEach(async (to, from, next) => {
-  const requiresAdmin = to.matched.some(url => url.meta.requiresAdmin);
-  if (requiresAdmin) {
+  } else if (requiresAdmin) {
     try {
       await AuthAPI.admin();
       next()
