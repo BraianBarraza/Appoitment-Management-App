@@ -1,0 +1,16 @@
+name: Keep Render and Mongo Awake
+
+on:
+  schedule:
+    - cron: "0 9 */7 * *"
+  workflow_dispatch:
+
+jobs:
+  ping-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping backend endpoint
+        run: |
+          curl --fail --silent --show-error \
+            https://appoitment-management-app.onrender.com/api/services > /dev/null

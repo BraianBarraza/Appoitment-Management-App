@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import colors from 'colors';
 import cors from 'cors';
+import mongoose from 'mongoose';
 import {db} from './config/db.js'
 import servicesRoutes from "./routes/servicesRoutes.js";
 import authRoutes from "./routes/authRoutes.js"
@@ -16,9 +17,6 @@ const app = express();
 
 //read body data
 app.use(express.json());
-
-//connect db
-db()
 
 //cors configuration
 const whitelist = [process.env.FRONTEND_URL];
@@ -39,7 +37,33 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+const getDatabaseStatus = () => {
+    const states = {
+        0: 'disconnected',
+        1: 'connected',
+        2: 'connecting',
+        3: 'disconnecting',
+    };
+
+    return states[mongoose.connection.readyState] || 'unknown';
+}
+
+const healthCheck = (req, res) => {
+    const databaseStatus = getDatabaseStatus();
+    const isHealthy = databaseStatus === 'connected';
+
+    res.status(isHealthy ? 200 : 503).json({
+        status: isHealthy ? 'ok' : 'degraded',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        database: databaseStatus,
+        environment: process.env.NODE_ENV || 'development',
+    });
+}
+
 //route definition
+app.get('/health', healthCheck);
+app.get('/api/health', healthCheck);
 app.use('/api/services', servicesRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/appointments', appointmentRoutes);
@@ -54,7 +78,17 @@ app.use((err, req, res, next) => {
 //port definition
 const PORT = process.env.PORT || 8000
 
+const startServer = async () => {
+    try {
+        await db();
+        app.listen(PORT, () => {
+            console.log(colors.blue(`Server started on port:`),colors.bold(`${PORT}`));
+        });
+    } catch (err) {
+        console.error(colors.red('Failed to start server:'), err.message);
+        process.exit(1);
+    }
+}
+
 //start App
-app.listen(PORT, () => {
-    console.log(colors.blue(`Server started on port:`),colors.bold(`${PORT}`));
-})
+startServer();

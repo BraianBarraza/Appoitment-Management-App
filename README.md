@@ -72,6 +72,13 @@ This is a **learning project** built to practice and improve skills in **Vue 3**
 
 ## API Endpoints
 
+### Health Check
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/health` | Check API process status and MongoDB connection |
+| GET | `/api/health` | Same health check under the API namespace |
+
 ### Authentication (`/api/auth`)
 
 | Method | Endpoint | Description |
