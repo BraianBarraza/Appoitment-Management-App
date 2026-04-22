@@ -14,7 +14,7 @@ jobs:
         run: |
           status_code=$(curl --silent --show-error --output /dev/null \
             --write-out "%{http_code}" \
-            --header "Origin: https://appointments-management-app.netlify.app" \
+            --header "Origin: https://appointments.braianbarraza.com" \
             https://appoitment-management-app.onrender.com/api/services)
 
           echo "Backend responded with HTTP $status_code"

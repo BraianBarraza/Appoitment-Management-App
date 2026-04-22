@@ -1,4 +1,4 @@
-import {createTransport} from "../config/nodemailer.js";
+import {createTransport, getEmailFrom, getReplyToEmail} from "../config/nodemailer.js";
 
 function escapeHtml(text) {
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
@@ -6,18 +6,14 @@ function escapeHtml(text) {
 }
 
 export async function sendEmailVerification({name, email, token}) {
-    const transporter = createTransport(
-            process.env.EMAIL_HOST,
-            process.env.EMAIL_PORT,
-            process.env.EMAIL_USER,
-            process.env.EMAIL_PASS
-    );
+    const transporter = createTransport();
 
     const safeName = escapeHtml(name);
 
     //send email
-    const info = await transporter.sendMail({
-        from: 'AppointmentApp <account@app.com>',
+    await transporter.sendMail({
+        from: getEmailFrom(),
+        replyTo: getReplyToEmail(),
         to: email,
         subject: 'Verify your account',
         text: 'Verify your account',
@@ -29,18 +25,14 @@ export async function sendEmailVerification({name, email, token}) {
 }
 
 export async function sendEmailPasswordReset({name, email, token}) {
-    const transporter = createTransport(
-        process.env.EMAIL_HOST,
-        process.env.EMAIL_PORT,
-        process.env.EMAIL_USER,
-        process.env.EMAIL_PASS
-    );
+    const transporter = createTransport();
 
     const safeName = escapeHtml(name);
 
     //send email
-    const info = await transporter.sendMail({
-        from: 'AppointmentApp <account@app.com>',
+    await transporter.sendMail({
+        from: getEmailFrom(),
+        replyTo: getReplyToEmail(),
         to: email,
         subject: 'Reset your password',
         text: 'Reset your password',

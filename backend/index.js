@@ -8,6 +8,7 @@ import servicesRoutes from "./routes/servicesRoutes.js";
 import authRoutes from "./routes/authRoutes.js"
 import appointmentRoutes from "./routes/appointmentRoutes.js"
 import userRoutes from "./routes/userRoutes.js";
+import {isEmailConfigured} from "./config/nodemailer.js";
 
 //env var
 dotenv.config();
@@ -19,7 +20,14 @@ const app = express();
 app.use(express.json());
 
 //cors configuration
-const whitelist = [process.env.FRONTEND_URL];
+const whitelist = [
+    process.env.FRONTEND_URL,
+    process.env.ADDITIONAL_FRONTEND_URLS
+]
+    .filter(Boolean)
+    .flatMap(value => value.split(','))
+    .map(value => value.trim())
+    .filter(Boolean);
 
 if (process.argv[2] === '--postman'){
     whitelist.push(undefined);
@@ -57,6 +65,7 @@ const healthCheck = (req, res) => {
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         database: databaseStatus,
+        email: isEmailConfigured() ? 'configured' : 'missing_config',
         environment: process.env.NODE_ENV || 'development',
     });
 }

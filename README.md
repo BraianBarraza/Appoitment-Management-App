@@ -79,6 +79,8 @@ This is a **learning project** built to practice and improve skills in **Vue 3**
 | GET | `/health` | Check API process status and MongoDB connection |
 | GET | `/api/health` | Same health check under the API namespace |
 
+The health response also reports whether the email service has the required SMTP configuration, without exposing secrets.
+
 ### Authentication (`/api/auth`)
 
 | Method | Endpoint | Description |
@@ -150,6 +152,25 @@ This is a **learning project** built to practice and improve skills in **Vue 3**
 
 The API will be available at `http://localhost:8000`.
 
+#### SMTP Configuration (Brevo)
+
+For Brevo SMTP, configure these environment variables in your backend deployment:
+
+```env
+EMAIL_HOST=smtp-relay.brevo.com
+EMAIL_PORT=587
+EMAIL_USER=your-brevo-smtp-login
+EMAIL_PASS=your-brevo-smtp-key
+EMAIL_FROM=no-reply@appointments.braianbarraza.com
+EMAIL_FROM_NAME=Appointments Management App
+EMAIL_REPLY_TO=your-contact-email@example.com
+ADMIN_EMAIL=your-admin-email@example.com
+FRONTEND_URL=https://appointments.braianbarraza.com
+ADDITIONAL_FRONTEND_URLS=https://appointments-management-app.netlify.app
+```
+
+`EMAIL_HOST` and `EMAIL_PORT` default to Brevo's SMTP relay if omitted, but keeping them explicit in production makes the deployment easier to audit. Never commit real SMTP keys to the repository.
+
 ### Frontend Setup
 
 1. Navigate to the frontend directory:
@@ -173,6 +194,29 @@ The API will be available at `http://localhost:8000`.
    ```
 
 The app will be available at `http://localhost:5173`.
+
+### Production Domains
+
+- Frontend: `https://appointments.braianbarraza.com`
+- Backend API: `https://appoitment-management-app.onrender.com/api`
+- Sender email: `no-reply@appointments.braianbarraza.com`
+
+### Netlify Custom Domain
+
+In Netlify, add `appointments.braianbarraza.com` as a custom domain for the frontend site and update the frontend environment variable:
+
+```env
+VITE_API_URL=https://appoitment-management-app.onrender.com/api
+```
+
+After the custom domain is active, make sure the backend `FRONTEND_URL` also points to `https://appointments.braianbarraza.com`.
+
+During the migration, you can keep both frontend domains allowed in Render with:
+
+```env
+FRONTEND_URL=https://appointments.braianbarraza.com
+ADDITIONAL_FRONTEND_URLS=https://appointments-management-app.netlify.app
+```
 
 ### Available Scripts
 

@@ -1,17 +1,11 @@
-import {createTransport} from "../config/nodemailer.js";
-
-const getAdminEmail = () => process.env.ADMIN_EMAIL || 'admin@appointmentApp.com';
+import {createTransport, getAdminEmail, getEmailFrom, getReplyToEmail} from "../config/nodemailer.js";
 
 export async function sendEmailNewAppointment({date, time}) {
-    const transporter = createTransport(
-        process.env.EMAIL_HOST,
-        process.env.EMAIL_PORT,
-        process.env.EMAIL_USER,
-        process.env.EMAIL_PASS
-    );
+    const transporter = createTransport();
 
     const info = await transporter.sendMail({
-        from: 'AppointmentApp <appointments@appointmentApp.com>',
+        from: getEmailFrom(),
+        replyTo: getReplyToEmail(),
         to: getAdminEmail(),
         subject: 'Appointment App - New Appointment Scheduled',
         text: 'New Appointment Scheduled',
@@ -23,15 +17,11 @@ export async function sendEmailNewAppointment({date, time}) {
     console.log('Message sent: %s', info.messageId);
 }
 export async function sendEmailUpdateAppointment({date, time, services}) {
-    const transporter = createTransport(
-        process.env.EMAIL_HOST,
-        process.env.EMAIL_PORT,
-        process.env.EMAIL_USER,
-        process.env.EMAIL_PASS
-    );
+    const transporter = createTransport();
 
     const info = await transporter.sendMail({
-        from: 'AppointmentApp <appointments@appointmentApp.com>',
+        from: getEmailFrom(),
+        replyTo: getReplyToEmail(),
         to: getAdminEmail(),
         subject: 'Appointment App - Edited Appointment',
         text: 'Appointment service edited or rescheduled',
@@ -45,15 +35,11 @@ export async function sendEmailUpdateAppointment({date, time, services}) {
 }
 
 export async function sendEmailDeletedAppointment({date, time}) {
-    const transporter = createTransport(
-        process.env.EMAIL_HOST,
-        process.env.EMAIL_PORT,
-        process.env.EMAIL_USER,
-        process.env.EMAIL_PASS
-    );
+    const transporter = createTransport();
 
     const info = await transporter.sendMail({
-        from: 'AppointmentApp <appointments@appointmentApp.com>',
+        from: getEmailFrom(),
+        replyTo: getReplyToEmail(),
         to: getAdminEmail(),
         subject: 'Appointment App - Canceled Appointment',
         text: 'Appointment service Canceled',
