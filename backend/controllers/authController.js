@@ -3,6 +3,12 @@ import {sendEmailPasswordReset, sendEmailVerification} from "../emails/authEmail
 import {generateJWT} from "../utils/index.js";
 import {uniqueId} from "../utils/index.js";
 
+const DEMO_USER = {
+    name: 'Demo User',
+    email: 'mail@mail.com',
+    password: '1234456789',
+};
+
 const signUp = async (req, res) => {
     const {email, name, password} = req.body;
 
@@ -45,6 +51,49 @@ const signUp = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({msg: 'An error occurred while processing your request'})
+    }
+}
+
+const ensureDemoUser = async (req, res) => {
+    try {
+        let demoUser = await User.findOne({email: DEMO_USER.email});
+
+        if (!demoUser) {
+            demoUser = new User({
+                name: DEMO_USER.name,
+                email: DEMO_USER.email,
+                password: DEMO_USER.password,
+                verified: true,
+                token: '',
+            });
+
+            await demoUser.save();
+        } else {
+            let shouldSave = false;
+
+            if (!demoUser.verified || demoUser.token) {
+                demoUser.verified = true;
+                demoUser.token = '';
+                shouldSave = true;
+            }
+
+            if (!(await demoUser.checkPassword(DEMO_USER.password))) {
+                demoUser.password = DEMO_USER.password;
+                shouldSave = true;
+            }
+
+            if (shouldSave) {
+                await demoUser.save();
+            }
+        }
+
+        res.json({
+            msg: 'Demo user is ready',
+            email: DEMO_USER.email,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({msg: 'An error occurred while preparing the demo user'})
     }
 }
 
@@ -190,6 +239,7 @@ const admin = async (req, res) => {
 
 export {
     signUp,
+    ensureDemoUser,
     confirmAccount,
     login,
     forgotPassword,

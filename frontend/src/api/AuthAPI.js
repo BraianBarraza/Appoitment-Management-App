@@ -4,6 +4,9 @@ export default {
   signUp(data) {
     return api.post('/auth/sign-up', data)
   },
+  prepareDemoUser() {
+    return api.post('/auth/demo-user')
+  },
   confirmAccount(token) {
     return api.get(`/auth/confirm-account/${token}`)
   },

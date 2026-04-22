@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     signUp,
+    ensureDemoUser,
     confirmAccount,
     login,
     user,
@@ -15,6 +16,7 @@ const router = express.Router();
 
 //Authentication routes and Login
 router.post('/sign-up', signUp);
+router.post('/demo-user', ensureDemoUser);
 router.get('/confirm-account/:token', confirmAccount);
 router.post('/login', login);
 router.post('/forgot-password', forgotPassword);
