@@ -1,8 +1,8 @@
-name: Keep Render and Mongo Awake
+name: Keep Render Awake
 
 on:
   schedule:
-    - cron: "0 9 */3 * *"
+    - cron: "7/10 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ping backend endpoint
+      - name: Ping health endpoint
         run: |
           status_code=$(curl --silent --show-error --output /dev/null \
             --write-out "%{http_code}" \
             --header "Origin: https://appointments.braianbarraza.com" \
-            https://appoitment-management-app.onrender.com/api/services)
+            https://appoitment-management-app.onrender.com/api/health)
 
           echo "Backend responded with HTTP $status_code"
 
